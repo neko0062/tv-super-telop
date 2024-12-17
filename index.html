@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1.0, width=device-width">
+  <title>TV Super Telop</title>
+  <style>
+    *::before,
+    *::after,
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+      background: linear-gradient(to right, #666, #888);
+      background-size: 5%;
+      font: sans-serif;
+    }
+
+    .super-telop {
+      position: fixed;
+      max-width: 80%;
+      top: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      
+      font-family: "LINE Seed JP_TTF";
+      font-size: 3.5vw;
+
+      user-select: none;
+
+      &[data-text-align="left"] {
+        width: 100%;
+      }
+
+      .outline {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        color: transparent;
+        -webkit-text-stroke: 0.25em black;
+      }
+
+      .text {
+        position: relative;
+        z-index: 1;
+        color: white;
+      }
+
+      /* カスタム */
+      span.underline {
+        padding-inline: 0.5rem;
+      }
+      .outline span.underline {
+        position: relative;
+        z-index: 0;
+
+        &::before {
+          content: "";
+          display: block;
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+
+          --bg-start: 65%;
+          --bg-end: 90%;
+          background: linear-gradient(to bottom,
+                                      transparent var(--bg-start),
+                                      var(--bg-color) var(--bg-start),
+                                      var(--bg-color) var(--bg-end),
+                                      transparent var(--bg-end));
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="super-telop" data-text-align="left">
+    <p class="outline">
+      <span class="underline" style="--bg-color: #0b0">震度３</span>
+      &nbsp;
+      茨城県南部
+    </p>
+    <p class="text">
+      <span class="underline" style="--bg-color: #0b0">震度３</span>
+      &nbsp;
+      茨城県南部
+    </p>
+  </div>
+</body>
+</html>
