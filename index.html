@@ -16,24 +16,32 @@
     html, body {
       height: 100%;
       background: linear-gradient(to right, #666, #888);
-      background-size: 5%;
+      background-size: 2.5%;
       font: sans-serif;
     }
 
-    .super-telop {
-      position: fixed;
-      max-width: 80%;
-      top: 5%;
-      left: 50%;
-      transform: translateX(-50%);
-      
+    body {
+      display: grid;
+      padding: 3rem;
+      padding-bottom: 0;
+      grid-template-rows: 1fr max-content;
+      place-items: center;
       font-family: "LINE Seed JP_TTF";
-      font-size: 3.5vw;
+    }
 
+    .super-telop {
+      position: relative;
+      max-width: 85%;
+      
+      font-size: 3.5vw;
       user-select: none;
 
       &[data-text-align="left"] {
         width: 100%;
+      }
+      &[data-text-align="right"] {
+        width: 100%;
+        text-align: right;
       }
 
       .outline {
@@ -51,10 +59,10 @@
       }
 
       /* カスタム */
-      span.underline {
+      .underline {
         padding-inline: 0.5rem;
       }
-      .outline span.underline {
+      .outline .underline {
         position: relative;
         z-index: 0;
 
@@ -65,6 +73,7 @@
           inset: 0;
           z-index: -1;
 
+          --bg-color: #0b0;
           --bg-start: 65%;
           --bg-end: 90%;
           background: linear-gradient(to bottom,
@@ -72,6 +81,45 @@
                                       var(--bg-color) var(--bg-start),
                                       var(--bg-color) var(--bg-end),
                                       transparent var(--bg-end));
+        }
+      }
+    }
+
+    .editor {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: calc(100% - 4rem);
+      padding: 1.5rem;
+      border: 2px solid #fff4;
+      border-bottom: none;
+      border-radius: 0.5rem;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      background: #5554;
+      backdrop-filter: blur(16px);
+      color: #fffd;
+
+      label {
+        margin-inline-end: 1rem;
+        color: white;
+      }
+
+      .dropdown {
+        padding: 0.25rem 0.75rem;
+      }
+
+      #telop-data-input {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        border: solid 2px #fff4;
+        background: #0001;
+        color: inherit;
+
+        &::placeholder {
+          font-weight: normal;
+          color: #fff6;
         }
       }
     }
@@ -90,5 +138,62 @@
       茨城県南部
     </p>
   </div>
+  <div class="editor">
+    <p>
+      <select id="option-text-align" class="dropdown">
+        <option value="left" selected>|←　 左揃え</option>
+        <option value="center">→|← 中央揃え</option>
+        <option value="right">　→| 右揃え</option>
+      </select>
+    </p>
+    <p>
+      <textarea rows="2" id="telop-data-input" placeholder="表示テキスト">_震度４_　茨城県南部　千葉県北東部</textarea>
+    </p>
+  </div>
+  <script>
+    const $editor = document.querySelector(".editor");
+    const $optionTextAlign = $editor.querySelector("#option-text-align");
+    const $telopDataInput = $editor.querySelector("#telop-data-input");
+
+    const $telopContainer = document.querySelector(".super-telop");
+
+    function convertTelopDataToHTML(telopData) {
+      let content = telopData;
+      content = content.replaceAll("\n", "<br>");
+      content = replaceToTag(content, "_", "span", "underline");
+
+      return `
+        <p class="outline">${content}</p>
+        <p class="text">${content}</p>
+      `;
+    }
+
+    function replaceToTag(originalString, targetChar, tagName, className) {
+      return originalString
+        .replaceAll(
+          new RegExp(`${targetChar}.*?${targetChar}`, "g"),
+          (s) => {
+            return s
+              .replaceAll(targetChar, "<>") // _content_ → <>content<>
+              .replace("<>", `<${tagName} class="${className}">`) // <tagName class="">content<>
+              .replace("<>", `</${tagName}>`) // <tagName class="">content</tagName>
+          }
+        )
+    }
+
+    function updateTelop() {
+      const textAlign = $optionTextAlign.value;
+      const telopData = $telopDataInput.value;
+
+      const html = convertTelopDataToHTML(telopData);
+
+      $telopContainer.dataset.textAlign = textAlign;
+      $telopContainer.innerHTML = html;
+    }
+
+    $optionTextAlign.addEventListener("change", updateTelop);
+    $telopDataInput.addEventListener("input", updateTelop);
+    window.addEventListener("load", updateTelop);
+  </script>
 </body>
-</html>
+</html
