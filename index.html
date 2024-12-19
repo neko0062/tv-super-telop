@@ -15,29 +15,42 @@
     
     html, body {
       height: 100%;
-      background: linear-gradient(to right, #666, #888);
-      background-size: 2.5%;
-      font: sans-serif;
+      font: 400 16px "LINE Seed JP_TTF",sans-serif;
     }
 
     body {
+      position: relative;
       display: grid;
       padding: 3rem;
       padding-bottom: 0;
       grid-template-rows: 1fr max-content;
       place-items: center;
-      font-family: "LINE Seed JP_TTF";
+      background: gray;
+    }
+
+    .background-image {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.5s linear;
     }
 
     .super-telop {
       position: relative;
-      max-width: 85%;
+      width: 85%;
       
       font-size: 3.5vw;
       user-select: none;
 
       &[data-text-align="left"] {
-        width: 100%;
+        text-align: left;
+      }
+      &[data-text-align="center"] {
+        text-align: center;
       }
       &[data-text-align="right"] {
         width: 100%;
@@ -83,6 +96,24 @@
                                       transparent var(--bg-end));
         }
       }
+
+      .mark {
+        padding-inline: 1rem;
+      }
+      .outline .mark {
+        position: relative;
+        z-index: 0;
+
+        &::before {
+          content: "";
+          display: block;
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+
+          background: #f22;
+        }
+      }
     }
 
     .editor {
@@ -90,14 +121,16 @@
       flex-direction: column;
       gap: 0.5rem;
       width: calc(100% - 4rem);
+
       padding: 1.5rem;
       border: 2px solid #fff4;
       border-bottom: none;
       border-radius: 0.5rem;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      background: #5554;
+      background: #333a;
       backdrop-filter: blur(16px);
+      
       color: #fffd;
 
       label {
@@ -123,9 +156,22 @@
         }
       }
     }
+
+    .informaions {
+      color: #fff7;
+
+      a {
+        transition: color .3s linear;
+
+        &:hover {
+          color: white;
+        }
+      }
+    }
   </style>
 </head>
 <body>
+  <img class="background-image" src="https://picsum.photos/1280/720" loading="lazy" onload="this.style.opacity = 1">
   <div class="super-telop" data-text-align="left">
     <p class="outline">
       <span class="underline" style="--bg-color: #0b0">震度３</span>
@@ -148,6 +194,10 @@
     </p>
     <p>
       <textarea rows="2" id="telop-data-input" placeholder="表示テキスト">_震度４_　茨城県南部　千葉県北東部</textarea>
+      <small><code>_text_</code> ＝ 下線、<code>#text#</code> ＝ 強調</small>
+    </p>
+    <p class="informaions">
+      <small>Background image from <a href="https://unsplash.com">Unsplash</a> via <a href="https://picsum.photos">Lorem Picsum</a></small>
     </p>
   </div>
   <script>
@@ -161,6 +211,7 @@
       let content = telopData;
       content = content.replaceAll("\n", "<br>");
       content = replaceToTag(content, "_", "span", "underline");
+      content = replaceToTag(content, "#", "span", "mark");
 
       return `
         <p class="outline">${content}</p>
